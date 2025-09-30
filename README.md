@@ -14,7 +14,9 @@ plugins:
     key: "xyz"
     baseurl: "https://xxxxxx.xxxxxx/search"
     useragent: "your-useragent"
-    external: false # set to true if you want to enable external results on all isrc searches (may be slow, use with caution)
+    wants: # Features to include in the response.
+      - "tidal" # Replaces ?external=true
+      - "lavalink" # Includes the "lavalink" track string
 ```
 
 ### Usage

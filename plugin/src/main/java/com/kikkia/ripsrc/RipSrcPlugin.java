@@ -24,7 +24,7 @@ public class RipSrcPlugin implements AudioPlayerManagerConfiguration, SearchMana
                 config.getBaseUrl(),
                 config.getName(),
                 config.getUserAgent(),
-                config.getExternal(),
+                config.getWants(),
                 config.getConnectTimeout(),
                 config.getSocketTimeout(),
                 config.getConnectionRequestTimeout()
@@ -37,7 +37,7 @@ public class RipSrcPlugin implements AudioPlayerManagerConfiguration, SearchMana
         log.info("Registering ripsrc audio source manager...");
         manager.registerSourceManager(this.ripSrcAudioManager);
         return manager;
-    }
+       }
 
     @Override
     @NotNull

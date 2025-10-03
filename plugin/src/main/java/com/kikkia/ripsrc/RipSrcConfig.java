@@ -2,6 +2,7 @@ package com.kikkia.ripsrc;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import java.util.List;
 
 @ConfigurationProperties(prefix = "plugins.ripsrc")
 @Component
@@ -10,7 +11,7 @@ public class RipSrcConfig {
 	private String baseUrl;
 	private String name;
 	private String userAgent;
-	private boolean external;
+	private List<String> wants;
 	private int connectTimeout = 3000;
 	private int socketTimeout = 3000;
 	private int connectionRequestTimeout = 3000;
@@ -47,12 +48,12 @@ public class RipSrcConfig {
 		this.userAgent = userAgent;
 	}
 
-	public void setExternal(boolean external) {
-		this.external = external;
+	public List<String> getWants() {
+		return wants;
 	}
 
-	public boolean getExternal() {
-		return external;
+	public void setWants(List<String> wants) {
+		this.wants = wants;
 	}
 
 	public int getConnectTimeout() {

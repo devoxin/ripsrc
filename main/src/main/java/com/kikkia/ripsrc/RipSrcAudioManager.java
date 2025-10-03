@@ -34,14 +34,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class RipSrcAudioManager implements HttpConfigurable, AudioSourceManager, AudioSearchManager {
-	public static final String SEARCH_PREFIX = "ripsearch:";
+ 	public static final String SEARCH_PREFIX = "ripsearch:";
 	public static final String ISRC_PREFIX = "ripisrc:";
 	public static final Set<AudioSearchResult.Type> SEARCH_TYPES = Set.of(AudioSearchResult.Type.TRACK);
 	private String baseUrl;
 	private String key;
 	private String name;
 	private String userAgent = "Lavasrc";
-	private boolean external;
+	private List<String> wants;
 
 	private HttpInterfaceManager httpInterfaceManager;
 	private static final Logger log = LoggerFactory.getLogger(RipSrcAudioManager.class);
@@ -50,7 +50,7 @@ public class RipSrcAudioManager implements HttpConfigurable, AudioSourceManager,
 							  String baseUrl,
 							  @Nullable String name,
 							  @Nullable String userAgent,
-							  boolean external,
+							  List<String> wants,
 							  int connectTimeout,
 							  int socketTimeout,
 							  int connectRequestTimeout) {
@@ -60,7 +60,7 @@ public class RipSrcAudioManager implements HttpConfigurable, AudioSourceManager,
 		if (userAgent != null) {
 			this.userAgent = userAgent;
 		}
-		this.external = external;
+		this.wants = wants;
 
 		RequestConfig requestConfig = RequestConfig.custom()
 				.setConnectionRequestTimeout(connectRequestTimeout)
@@ -153,6 +153,12 @@ public class RipSrcAudioManager implements HttpConfigurable, AudioSourceManager,
 		var contentLength = version.get("size").asLong(Units.CONTENT_LENGTH_UNKNOWN);
 		var url = version.get("url").text() + "&codec=" + codec + "&clen=" + contentLength;
 
+		String isrc = null;
+		JsonBrowser isrcs = json.get("isrc");
+		if (!isrcs.isNull() && !isrcs.values().isEmpty()) {
+			isrc = isrcs.index(0).text();
+		}
+
 		var track = new AudioTrackInfo(
 			json.get("title").text(),
 			json.get("artist").text(),
@@ -161,7 +167,7 @@ public class RipSrcAudioManager implements HttpConfigurable, AudioSourceManager,
 			false,
 			url,
 			json.get("picture").text(),
-			json.get("isrc").index(0).text()
+			isrc
 		);
 
 		return new RipSrcAudioTrack(track, this);
@@ -209,14 +215,22 @@ public class RipSrcAudioManager implements HttpConfigurable, AudioSourceManager,
 	}
 
 	public String getISRCSearchUrl(String isrc) {
-		return baseUrl + "?p=" + key + "&isrcs=" + isrc + "&external=" + external;
+		var url = baseUrl + "?p=" + key + "&isrcs=" + isrc;
+		if (wants != null && !wants.isEmpty()) {
+			url += "&wants=" + String.join(",", wants);
+		}
+		return url;
 	}
 
 	public String getSearchUrl(String search) {
-		return baseUrl + "?p=" + key + "&q=" + search;
+		var url = baseUrl + "?p=" + key + "&q=" + search;
+		if (wants != null && !wants.isEmpty()) {
+			url += "&wants=" + String.join(",", wants);
+		}
+		return url;
 	}
 
 	public HttpInterface getHttpInterface() {
 		return this.httpInterfaceManager.getInterface();
 	}
-}
+ }

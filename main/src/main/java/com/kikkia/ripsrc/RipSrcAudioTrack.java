@@ -54,6 +54,7 @@ public class RipSrcAudioTrack extends DelegatedAudioTrack {
 			var parsedUri = new URI(uri);
 			var queryParams = parsedUri.getQuery();
 			var parsedParams = new HashMap<String, String>();
+			if (queryParams == null) return parsedParams;
 
 			for (var pair : queryParams.split("&")) {
 				var splitIdx = pair.indexOf("=");

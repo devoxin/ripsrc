@@ -96,7 +96,7 @@ public class RipSrcAudioTrack extends DelegatedAudioTrack {
 			long expireEpochMs = Long.parseLong(expires);
 
 			// safety buffer
-			if (System.currentTimeMillis() > expireEpochMs - TimeUnit.MINUTES.toMillis(5)) {
+			if (System.currentTimeMillis() < expireEpochMs - TimeUnit.MINUTES.toMillis(5)) {
 				return currentUrl;
 			}
 		} catch (NumberFormatException e) {
